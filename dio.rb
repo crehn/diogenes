@@ -16,7 +16,15 @@ end
 
 def create_sip
 	guid = SecureRandom.uuid
-	puts `#{HTTPIE} PUT #{ENDPOINT}/sips/#{guid} guid=#{guid} #{ARGV.join ' '}`
+	tags = extract_tags
+	puts `#{HTTPIE} PUT #{ENDPOINT}/sips/#{guid} guid=#{guid} #{ARGV.join ' '} tags:='#{tags}'`
+end
+
+def extract_tags
+	result = ARGV.select {|arg| arg.start_with? '+'}
+	result.map! {|tag| tag.delete '+'}
+	ARGV.delete_if {|arg| arg.start_with? '+'}
+	return result
 end
 
 def read_sips
