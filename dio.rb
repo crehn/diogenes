@@ -42,7 +42,7 @@ class CliBoundary
 		.tags(tags)
 		.text(text)
 
-		@gateway.send request.line
+		@gateway.send request
 	end
 
 	def get_arg(*names)
@@ -64,9 +64,8 @@ class CliBoundary
 	end
 
 	def read_sips
-		while ARGV.length > 0
-			puts `#{HTTPIE} GET #{ENDPOINT}/sips/#{ARGV.shift}` #todo: move to gateway
-		end
+		query = ARGV.join ' '
+		@gateway.query query
 	end
 
 	def create_sip_interactively
@@ -105,7 +104,7 @@ class CliBoundary
 			system "$EDITOR #{file.path}"
 			file.rewind
 			result = file.read
-			return result == '' ? nil : result.chomp
+			return result.empty? ? nil : result.chomp
 		ensure
 			file.unlink
 			file.close
