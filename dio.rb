@@ -92,9 +92,9 @@ class CliBoundary
 
 	def prompt_for_tags
 		tagsString = prompt('tags')
-		unless tags.nil?
-			tags = tagsString.split!
-			delete_plus_prefix! tags 
+		unless tagsString.nil?
+			tags = tagsString.split
+			tags = delete_plus_prefix tags 
 		end
 		return tags
 	end
@@ -105,8 +105,7 @@ class CliBoundary
 			system "$EDITOR #{file.path}"
 			file.rewind
 			result = file.read
-			result = nil if result == ''
-			return result
+			return result == '' ? nil : result.chomp
 		ensure
 			file.unlink
 			file.close
