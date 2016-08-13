@@ -37,7 +37,7 @@ class CreateSipRequest
 	public
 	def line
 		guid = SecureRandom.uuid
-		result = "#{HTTPIE} PUT #{ENDPOINT}/sips/#{guid} guid=#{guid} "
+		result = "#{HTTPIE} PUT #{ENDPOINT}/sips/#{guid} "
 		result += "title=#{@title} " unless @title.nil?
 		result += "sourceUri=#{@sourceUri} " unless @sourceUri.nil?
 		result += "text='#{@text}' " unless @text.nil?
