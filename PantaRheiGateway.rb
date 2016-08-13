@@ -12,4 +12,7 @@ class PantaRheiGateway
 		puts `#{HTTPIE} GET #{ENDPOINT}/sips 'q==#{query}'`
 	end
 
+	def delete(guid)
+		puts `#{HTTPIE} DELETE #{ENDPOINT}/sips/#{guid}`
+	end
 end

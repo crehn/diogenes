@@ -30,6 +30,9 @@ class CliBoundary
 		MODES.keys.include?(ARGV[0]) ? ARGV.shift : 'r'
 	end
 
+
+	# create
+
 	def create_sip
 		title = get_arg 'title', 'ti', 't'
 		sourceUri = get_arg 'sourceUri', 's'
@@ -63,10 +66,32 @@ class CliBoundary
 		tags.map {|tag| tag.delete '+'}
 	end
 
+
+	# read
+
 	def read_sips
 		query = ARGV.join ' '
 		@gateway.query query
 	end
+
+
+	# update
+
+	def update_sip
+		puts "not implemented"
+	end
+
+
+	# delete
+
+	def delete_sip
+		ARGV.each do |guid|
+			@gateway.delete guid
+		end
+	end
+
+
+	# create interacticely
 
 	def create_sip_interactively
 		title = prompt 'title'
@@ -109,14 +134,6 @@ class CliBoundary
 			file.unlink
 			file.close
 		end
-	end
-
-	def update_sip
-		puts "not implemented"
-	end
-
-	def delete_sip
-		puts "not implemented"
 	end
 end
 
