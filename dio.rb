@@ -80,7 +80,7 @@ class CliBoundary
 		.tags(tags)
 		.text(text)
 
-		@gateway.send request.line
+		@gateway.send request
 	end
 
 	def prompt(msg)
