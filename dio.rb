@@ -14,7 +14,8 @@ class CliBoundary
 		'r' => :read_sips,
 		'u' => :update_sip,
 		'd' => :delete_sip,
-		'ci' => :create_sip_interactively
+		'ci' => :create_sip_interactively,
+		'ui' => :update_sip_interactively
 	};
 
 	def initialize(gateway)
@@ -67,30 +68,6 @@ class CliBoundary
 	end
 
 
-	# read
-
-	def read_sips
-		query = ARGV.join ' '
-		@gateway.query query
-	end
-
-
-	# update
-
-	def update_sip
-		puts "not implemented"
-	end
-
-
-	# delete
-
-	def delete_sip
-		ARGV.each do |guid|
-			@gateway.delete guid
-		end
-	end
-
-
 	# create interacticely
 
 	def create_sip_interactively
@@ -108,14 +85,14 @@ class CliBoundary
 		@gateway.send request
 	end
 
-	def prompt(msg)
-		print msg + ": "
-		result = readline.strip
+	def prompt(prompt, default = '')
+		input = `read -p '#{prompt}: ' -e -i '#{default}' result && echo $result`
+		result = input.strip
 		return result != "" ? result : nil
 	end
 
-	def prompt_for_tags
-		tagsString = prompt('tags')
+	def prompt_for_tags(default = '')
+		tagsString = prompt('tags', default)
 		unless tagsString.nil?
 			tags = tagsString.split
 			tags = delete_plus_prefix tags 
@@ -123,9 +100,11 @@ class CliBoundary
 		return tags
 	end
 
-	def prompt_editor
+	def prompt_editor(default = '')
 		file = Tempfile.new('dio-ci')
 		begin
+			file.write default
+			file.flush
 			system "$EDITOR #{file.path}"
 			file.rewind
 			result = file.read
@@ -133,6 +112,66 @@ class CliBoundary
 		ensure
 			file.unlink
 			file.close
+		end
+	end
+	
+	
+	# read
+
+	def read_sips
+		query = ARGV.join ' '
+		@gateway.query query
+	end
+
+
+	# update
+
+	def update_sip
+		guid = ARGV.shift
+		title = get_arg 'title', 'ti', 't'
+		sourceUri = get_arg 'sourceUri', 's'
+		tags = get_tags_from_args
+		text = get_arg 'text', 'te'
+
+		request = ChangeSipRequest.new
+		.guid(guid)
+		.title(title)
+		.sourceUri(sourceUri)
+		.tags(tags)
+		.text(text)
+
+		@gateway.send request
+	end
+
+
+	# update interactvely
+	
+	def update_sip_interactively
+		guid = ARGV[0]
+
+		sip = @gateway.read(guid)
+
+		title = prompt 'title', sip[:title]
+		sourceUri = prompt 'sourceUri', sip[:sourceUri]
+		tags = prompt_for_tags sip[:tags].join ' '
+		text = prompt_editor sip[:text]
+
+		request = ChangeSipRequest.new
+		.guid(guid)
+		.title(title)
+		.sourceUri(sourceUri)
+		.tags(tags)
+		.text(text)
+
+		@gateway.send request
+	end
+
+
+	# delete
+
+	def delete_sip
+		ARGV.each do |guid|
+			@gateway.delete guid
 		end
 	end
 end

@@ -1,5 +1,7 @@
 #!/usr/bin/ruby
 
 HTTPIE = 'http -v --json --pretty=all'
-ENDPOINT = 'localhost:8080/rest'
+HOST = 'localhost'
+PORT = '8080'
+ENDPOINT = "#{HOST}:#{PORT}/rest"
 

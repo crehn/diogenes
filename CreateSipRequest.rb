@@ -4,7 +4,7 @@ require 'securerandom'
 
 require_relative 'config.rb'
 
-class CreateSipRequest
+class SipRequest
 	public
 	def title(title)
 		@title = title
@@ -36,13 +36,31 @@ class CreateSipRequest
 
 	public
 	def line
-		guid = SecureRandom.uuid
-		result = "#{HTTPIE} PUT #{ENDPOINT}/sips/#{guid} "
+		result = "#{HTTPIE} #{@method} #{ENDPOINT}/sips/#{@guid} "
 		result += "title=#{@title} " unless @title.nil?
 		result += "sourceUri=#{@sourceUri} " unless @sourceUri.nil?
 		result += "text='#{@text}' " unless @text.nil?
 		result += "tags:='#{@tags}' " unless @tags.nil? or @tags.empty?
 		return result.strip
+	end
+end
+
+class CreateSipRequest < SipRequest
+	def initialize
+		@method = 'PUT'
+		@guid = SecureRandom.uuid
+	end
+end
+
+class ChangeSipRequest < SipRequest
+	def initialize
+		@method = 'PATCH'
+	end
+
+	public
+	def guid(guid)
+		@guid = guid
+		return self
 	end
 end
 
